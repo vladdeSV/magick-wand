@@ -43,8 +43,29 @@ every option has a method. if something is missing, you can run special commands
 
 `run(...)` needs ImageMagick installed. it runs `magick` from your PATH (override with `run(im, 'png', { binary: 'my-magick-binary' })`). rejects with an `ImageMagickError` if something goes wrong.
 
-geometry flags have descriptive aliases: `.flag('fill-area')` is the same as `.flag('^')`. the others are `exact` (`!`), `enlarge-only` (`<`), `shrink-only` (`>`), and `pad` (`#`).
+### geometry
+methods that handle geometry usually have a basic usage, and an overload to allow for more advanced sizing.
 
+```ts
+im.resize(200, 100)              // simple variant becomes `200x100`
+im.resize(g => g.size(200, 100)) // allows more advanced operations
+```
+
+the overload is a function which takes a geometry class, which you use to chain operations on as well.
+
+```ts
+im.resize(g => g.scale(120, 90).flag('!'))
+```
+
+(the parameter is a convenience, so you could technically just create a new geometry object too if you want: `im.resize(_ => new Geometry().scale(200))` (or reuse a pre-defined geometry object??))
+
+### draw
+similar to resizing, the `-draw` method follows a similar pattern:
+
+```ts
+im.draw(d => d.line(0,0, 100,100).text(50,50, "my text"))
+// -draw 'line 0,0 100,100 text 50,50 "my text"'
+```
 
 ## advanced: spawning yourself
 
@@ -60,7 +81,7 @@ import { spawn } from 'node:child_process' // do not use `execute`, risk for inj
 
 const im = wand().resize(200, 200).strip().quality(80)
 
-// magick expands the glob itself; no shell is involved
+// magick expands the * to all files, even when using spawn
 spawn('magick', ['mogrify', ...im.args(), 'photos/*.jpg'])
 ```
 
