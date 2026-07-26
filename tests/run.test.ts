@@ -77,8 +77,8 @@ test('missing binary rejects with a spawn error', async () => {
 test('running the same builder twice works', async () => {
   const command = wand().xc('red', 8, 8)
 
-  const first = await run(command, 'png')
-  const second = await run(command, 'png')
+  const first = await run(command, 'txt')
+  const second = await run(command, 'txt')
 
-  expect(first.equals(second)).toBe(true)
+  expect(second.toString()).toBe(first.toString())
 })
